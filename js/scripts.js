@@ -4,6 +4,7 @@ var currentScoreArray = [];
 var finalRoundTotal = 0;
 var total = 0;
 var turn = 1;
+var wipe = false;
 // var re = /(\[object Object\])/gi;
 
 var Player = function(player) {
@@ -41,6 +42,44 @@ function rollDice(currentScoreArray) {
   //  currentScoreArray[0] = 0;
     turn = turn + 1;
     return currentScoreArray;
+  }
+}
+
+function rollDice2(currentScoreArray) {
+  var random1 = getRandomIntInclusive(1, 6);
+  var random2 = getRandomIntInclusive(1, 6);
+  if (random1 === 1 && random2 === 1) {
+    console.log("wipe");
+    currentScoreArray.length = 0;
+    wipe = true;
+    if (turn % 2 === 0) {
+      playerArray[1].totalScore = 0;
+      turn = turn + 1;
+      return 0;
+    } else {
+      playerArray[0].totalScore = 0;
+      turn = turn + 1;
+      return 0;
+    }
+  } else if (random1 === 1 || random2 === 1) {
+    currentScoreArray.length = 0;
+    turn = turn + 1;
+    return currentScoreArray;
+  } else {
+    var result = 0;
+    if (random1 === random2) {
+      result = (random1 + random2) * 2
+    } else {
+      var result = random1 + random2;
+    }
+    console.log(result);
+    currentScoreArray.push(result);
+    var roundTotal = 0;
+    for (var i in currentScoreArray) {
+      roundTotal += currentScoreArray[i];
+    }
+    console.log(roundTotal);
+    return roundTotal;
   }
 }
 
@@ -141,9 +180,25 @@ $(document).ready(function(){
     if (!($("input#name1").val()) || !($("input#name2").val())) {
       alert("Please enter player names");
     } else {
+      var currentScore = 0;
+      var diceType = $("input:radio[name=dice]:checked").val();
       var player2type = $("input:radio[name=player2]:checked").val();
-      var currentScore = rollDice(currentScoreArray);
+      if (diceType === "1") {
+        currentScore += rollDice(currentScoreArray);
+      } else {
+        currentScore += rollDice2(currentScoreArray);
+      }
       $("#round").empty();
+      if (wipe) {
+        if (turn % 2 === 0) {
+          $("#total1").empty();
+          $("#total1").append(0);
+        } else {
+          $("#total2").empty();
+          $("#total2").append(0);
+        }
+        wipe = false;
+      }
       $("#round").append(currentScore);
       if (player2type === "computer" && turn % 2 === 0) {
         playerArray[1].computer(currentScoreArray);
