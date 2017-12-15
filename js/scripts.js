@@ -5,6 +5,7 @@ var finalRoundTotal = 0;
 var total = 0;
 var turn = 1;
 var wipe = false;
+var twoDice = false;
 // var re = /(\[object Object\])/gi;
 
 var Player = function(player) {
@@ -84,9 +85,17 @@ function rollDice2(currentScoreArray) {
 }
 
 Player.prototype.computer = function(currentScoreArray) {
-  var currentScore = rollDice(currentScoreArray);
-  if (currentScore > 0) {
-    currentScore = rollDice(currentScoreArray);
+  var currentScore = 0;
+  if (!(twoDice)) {
+    var currentScore = rollDice(currentScoreArray);
+    if (currentScore > 0) {
+      currentScore = rollDice(currentScoreArray);
+    }
+  } else {
+    var currentScore = rollDice2(currentScoreArray);
+    if (currentScore > 0) {
+      currentScore = rollDice2(currentScoreArray);
+    }
   }
   console.log(currentScore);
   if (turn % 2 === 0) {
@@ -101,12 +110,23 @@ Player.prototype.computer = function(currentScoreArray) {
 }
 
 Player.prototype.computerHard = function(currentScoreArray) {
-  var currentScore = rollDice(currentScoreArray);
-  if (currentScore > 0) {
-    while (currentScore > 0 && currentScore < 10){
-      currentScore = rollDice(currentScoreArray);
+  var currentScore = 0;
+  if (!(twoDice)) {
+    var currentScore = rollDice(currentScoreArray);
+    if (currentScore > 0) {
+      while (currentScore > 0 && currentScore < 10){
+        currentScore = rollDice(currentScoreArray);
+      }
+    }
+  } else {
+    var currentScore = rollDice2(currentScoreArray);
+    if (currentScore > 0) {
+      while (currentScore > 0 && currentScore < 12) {
+        currentScore = rollDice2(currentScoreArray);
+      }
     }
   }
+
   console.log(currentScore);
   if (turn % 2 === 0) {
     turn = turn + 1;
@@ -187,6 +207,7 @@ $(document).ready(function(){
         currentScore += rollDice(currentScoreArray);
       } else {
         currentScore += rollDice2(currentScoreArray);
+        twoDice = true;
       }
       $("#round").empty();
       if (wipe) {
